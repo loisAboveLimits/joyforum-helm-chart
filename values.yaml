@@ -12,7 +12,9 @@ imagePullSecrets: []
 #   - acr-pull-secret
 
 service:
-  type: ClusterIP
+  type: ClusterIP   #if using ingress
+  #type: NodePort    #if external loadbalancer directly forwards traffic to srvice
+  #type: LoadBalancer # if classes LB is used
   port: 80
 
 ingress:
