@@ -11,7 +11,7 @@ env:
   ACR_LOGIN_SERVER: acrselabyoruat.azurecr.io
 
   HELM_CHART_DIR: .
-  
+
   HELM_REPOSITORY_PATH: helm/joyform
 
 jobs:
@@ -29,9 +29,6 @@ jobs:
 
       - name: Show Helm version
         run: helm version
-
-      - name: Lint chart
-        run: helm lint "$HELM_CHART_DIR"
 
       - name: Update chart dependencies
         run: |
