@@ -6,7 +6,12 @@ image:
   pullPolicy: IfNotPresent
 
 # No imagePullSecrets required; AKS manages ACR auth externally
-imagePullSecrets: []
+imagePullSecrets: []    # with no credentials
+
+# with credentials
+
+# imagePullSecrets:
+#   - acr-pull-secret
 
 service:
   type: LoadBalancer
@@ -39,8 +44,9 @@ deployment:
 resources: {}
 
 serviceAccount:
-  create: true
-  name: jormfarm-workload-identity-sa
+  create: false
+  # name: jormfarm-workload-identity-sa
+  name: vendor-access-sa
   automount: true
   annotations: {}
 
@@ -49,7 +55,8 @@ externalSecrets:
   secretStore:
     name: wordpress-azure-kv-store
     azureKeyVaultName: kv-csi-joyforum-xbuns
-    serviceAccountName: jormfarm-workload-identity-sa
+    # serviceAccountName: jormfarm-workload-identity-sa
+    serviceAccountName: vendor-access-sa
   secrets:
     - name: wordpress-db-secret
       refreshInterval: 10m
