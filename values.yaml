@@ -1,35 +1,23 @@
 replicaCount: 2
 
 image:
-  repository: yourregistry.azurecr.io/jormfarm
+  repository: your-env-specific-acr.azurecr.io/jormfarm
   tag: latest
   pullPolicy: IfNotPresent
 
-# If AKS has AcrPull permission through managed identity or service principal,
-# you can leave this empty.
+# No imagePullSecrets required; AKS manages ACR auth externally
 imagePullSecrets: []
-# imagePullSecrets:
-#   - acr-pull-secret
 
 service:
-  type: ClusterIP   #if using ingress
-  #type: NodePort    #if external loadbalancer directly forwards traffic to srvice
-  #type: LoadBalancer # if classes LB is used
+  type: LoadBalancer
   port: 80
+  annotations:
+    service.beta.kubernetes.io/azure-load-balancer-internal: "true"  # Required for internal LB on AKS
 
 ingress:
-  enabled: true
-  className: nginx
-  annotations: {}
-  hosts:
-    - host: your-public-domain.com
-      paths:
-        - /
+  enabled: false  # Disabled since using internal LoadBalancer
 
 env: []
-# env:
-#   - name: WORDPRESS_ENVIRONMENT
-#     value: production
 
 deployment:
   revisionHistoryLimit: 5
@@ -40,22 +28,19 @@ deployment:
       maxSurge: 25%
 
 resources: {}
-# resources:
-#   requests:
-#     cpu: 100m
-#     memory: 256Mi
-#   limits:
-#     cpu: 500m
-#     memory: 512Mi
+
+serviceAccount:
+  create: true
+  name: jormfarm-workload-identity-sa
+  automount: true
+  annotations: {}
 
 externalSecrets:
   enabled: true
-
   secretStore:
     name: wordpress-azure-kv-store
     azureKeyVaultName: your-keyvault-name
-    serviceAccountName: your-workload-identity-sa-name
-
+    serviceAccountName: jormfarm-workload-identity-sa
   secrets:
     - name: wordpress-db-secret
       refreshInterval: 10m
