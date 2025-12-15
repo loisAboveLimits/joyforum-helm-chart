@@ -1,7 +1,7 @@
 replicaCount: 2
 
 image:
-  repository: your-env-specific-acr.azurecr.io/jormfarm
+  repository: acrselabyoruat.azurecr.io/joyforum
   tag: latest
   pullPolicy: IfNotPresent
 
@@ -16,6 +16,15 @@ service:
 
 ingress:
   enabled: false  # Disabled since using internal LoadBalancer
+
+# ingress:
+#   enabled: false
+#   className: nginx
+#   annotations: {}
+#   hosts:
+#     - host: your-public-domain.com
+#       paths:
+#         - /
 
 env: []
 
@@ -39,17 +48,17 @@ externalSecrets:
   enabled: true
   secretStore:
     name: wordpress-azure-kv-store
-    azureKeyVaultName: your-keyvault-name
+    azureKeyVaultName: kv-csi-joyforum-xbuns
     serviceAccountName: jormfarm-workload-identity-sa
   secrets:
     - name: wordpress-db-secret
       refreshInterval: 10m
       data:
-        - secretKey: WORDPRESS_DB_HOST
-          remoteRefKey: wordpress-db-host
         - secretKey: WORDPRESS_DB_USER
-          remoteRefKey: wordpress-db-user
+          remoteRefKey: MySQLServerAdminUsername
         - secretKey: WORDPRESS_DB_PASSWORD
-          remoteRefKey: wordpress-db-password
+          remoteRefKey: MySQLServerAdminPassword
+        - secretKey: WORDPRESS_DB_HOST
+          remoteRefKey: mysql-host # We'll override in env var, but keep for completeness
         - secretKey: WORDPRESS_DB_NAME
-          remoteRefKey: wordpress-db-name
+          remoteRefKey: joyforum_db  # Assuming DB name is static

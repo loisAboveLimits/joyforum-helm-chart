@@ -1,10 +1,10 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "jormfarm.fullname" . }}
+  name: {{ include "joyforum.fullname" . }}
   labels:
-    app: {{ include "jormfarm.name" . }}
-    {{- include "jormfarm.labels" . | nindent 4 }}
+    app: {{ include "joyforum.name" . }}
+    {{- include "joyforum.labels" . | nindent 4 }}
 spec:
   replicas: {{ .Values.replicaCount }}
   revisionHistoryLimit: {{ .Values.deployment.revisionHistoryLimit }}
@@ -17,12 +17,17 @@ spec:
     {{- end }}
   selector:
     matchLabels:
-      app: {{ include "jormfarm.name" . }}
+      app: {{ include "joyforum.name" . }}
   template:
     metadata:
       labels:
-        app: {{ include "jormfarm.name" . }}
+        app: {{ include "joyforum.name" . }}
     spec:
+      tolerations:
+        - key: "workload"
+          operator: "Equal"
+          value: "joyforum"
+          effect: "NoSchedule"
       {{- if .Values.imagePullSecrets }}
       imagePullSecrets:
         {{- range .Values.imagePullSecrets }}
@@ -37,10 +42,7 @@ spec:
             - containerPort: 80
           env:
             - name: WORDPRESS_DB_HOST
-              valueFrom:
-                secretKeyRef:
-                  name: wordpress-db-secret
-                  key: WORDPRESS_DB_HOST
+              value: mysql-joyforum-h5j6.mysql.database.azure.com
             - name: WORDPRESS_DB_USER
               valueFrom:
                 secretKeyRef:
@@ -52,10 +54,7 @@ spec:
                   name: wordpress-db-secret
                   key: WORDPRESS_DB_PASSWORD
             - name: WORDPRESS_DB_NAME
-              valueFrom:
-                secretKeyRef:
-                  name: wordpress-db-secret
-                  key: WORDPRESS_DB_NAME
+              value: joyforum_db
             {{- range .Values.env }}
             - name: {{ .name }}
               value: {{ .value | quote }}

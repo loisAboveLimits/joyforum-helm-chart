@@ -1,18 +1,16 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ include "jormfarm.fullname" . }}
+  name: {{ include "joyforum.fullname" . }}
   labels:
-    app: {{ include "jormfarm.name" . }}
-    {{- include "jormfarm.labels" . | nindent 4 }}
+    app: {{ include "joyforum.name" . }}
+    {{- include "joyforum.labels" . | nindent 4 }}
   annotations:
-    {{- with .Values.service.annotations }}
-    {{- toYaml . | nindent 4 }}
-    {{- end }}
+    {{- toYaml .Values.service.annotations | nindent 4 }}
 spec:
   type: {{ .Values.service.type }}
   ports:
     - port: {{ .Values.service.port }}
       targetPort: 80
   selector:
-    app: {{ include "jormfarm.name" . }}
+    app: {{ include "joyforum.name" . }}
