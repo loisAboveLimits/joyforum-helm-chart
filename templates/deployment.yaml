@@ -23,6 +23,8 @@ spec:
       labels:
         app: {{ include "joyforum.name" . }}
     spec:
+      # Added serviceAccountName so Pod uses the specific service account (important for ExternalSecrets)
+      serviceAccountName: {{ .Values.serviceAccount.name }}
       tolerations:
         - key: "workload"
           operator: "Equal"
