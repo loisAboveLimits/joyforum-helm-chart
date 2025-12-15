@@ -2,7 +2,7 @@
 {{- default .Chart.Name .Values.nameOverride | trunc 63 | trimSuffix "-" -}}
 {{- end -}}
 
-{{- define "jormfarm.fullname" -}}
+{{- define "joyforum.fullname" -}}
 {{- if .Values.fullnameOverride -}}
 {{- .Values.fullnameOverride | trunc 63 | trimSuffix "-" -}}
 {{- else -}}
@@ -15,8 +15,8 @@
 {{- end -}}
 {{- end -}}
 
-{{- define "jormfarm.labels" -}}
-app.kubernetes.io/name: {{ include "jormfarm.name" . }}
+{{- define "joyforum.labels" -}}
+app.kubernetes.io/name: {{ include "joyforum.name" . }}
 helm.sh/chart: {{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}
 app.kubernetes.io/instance: {{ .Release.Name }}
 app.kubernetes.io/managed-by: {{ .Release.Service }}
