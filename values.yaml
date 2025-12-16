@@ -48,13 +48,15 @@ serviceAccount:
   # name: jormfarm-workload-identity-sa
   name: vendor-access-sa
   automount: true
-  annotations: {}
+  annotations: 
+    azure.workload.identity/client-id: "81c52050-b1c7-478d-9f49-53f8d9bede08"
 
 externalSecrets:
   enabled: true
   secretStore:
     name: wordpress-azure-kv-store
     azureKeyVaultName: kv-csi-joyforum-xbuns
+    tenantId: 606bd698-03f5-4b63-9ba3-1272b3fd2c3c
     # serviceAccountName: jormfarm-workload-identity-sa
     serviceAccountName: vendor-access-sa
   secrets:
