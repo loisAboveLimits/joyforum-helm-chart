@@ -56,7 +56,7 @@ externalSecrets:
   secretStore:
     name: wordpress-azure-kv-store
     azureKeyVaultName: kv-csi-joyforum-xbuns
-    tenantId: 606bd698-03f5-4b63-9ba3-1272b3fd2c3c
+#    tenantId: 606bd698-03f5-4b63-9ba3-1272b3fd2c3c
     # serviceAccountName: jormfarm-workload-identity-sa
     serviceAccountName: key-vault-csi-driver-controller
   secrets:
