@@ -5,20 +5,18 @@ metadata:
   name: {{ include "joyforum.fullname" . }}
   labels:
     {{- include "joyforum.labels" . | nindent 4 }}
-  {{- with .Values.ingress.annotations }}
   annotations:
-    {{- toYaml . | nindent 4 }}
-  {{- end }}
+    {{- toYaml .Values.ingress.annotations | nindent 4 }}
 spec:
   ingressClassName: {{ .Values.ingress.className }}
   rules:
     {{- range .Values.ingress.hosts }}
-    - host: {{ .host | quote }}
+    - host: {{ .host }}
       http:
         paths:
           {{- range .paths }}
-          - path: {{ .path | quote }}
-            pathType: {{ .pathType | default "Prefix" }}
+          - path: {{ .path }}
+            pathType: {{ .pathType }}
             backend:
               service:
                 name: {{ include "joyforum.fullname" $ }}

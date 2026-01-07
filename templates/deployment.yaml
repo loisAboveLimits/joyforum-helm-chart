@@ -25,58 +25,43 @@ spec:
         app.kubernetes.io/instance: {{ .Release.Name }}
     spec:
       serviceAccountName: {{ .Values.serviceAccount.name }}
-
       containers:
         - name: wordpress
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
-
           ports:
             - containerPort: 80
-
           env:
             - name: WORDPRESS_DB_HOST
               valueFrom:
                 secretKeyRef:
                   name: wordpress-db-secret
                   key: WORDPRESS_DB_HOST
-
             - name: WORDPRESS_DB_USER
               valueFrom:
                 secretKeyRef:
                   name: wordpress-db-secret
                   key: WORDPRESS_DB_USER
-
             - name: WORDPRESS_DB_PASSWORD
               valueFrom:
                 secretKeyRef:
                   name: wordpress-db-secret
                   key: WORDPRESS_DB_PASSWORD
-
             - name: WORDPRESS_DB_NAME
               valueFrom:
                 secretKeyRef:
                   name: wordpress-db-secret
                   key: WORDPRESS_DB_NAME
 
-
-            # =========================
-            # SAFE WORDPRESS EXTRA ENV
-            # This block was updated to avoid Helm nil pointer crashes
-            # =========================
-            {{- if .Values.wordpress }}
             {{- if .Values.wordpress.configExtra }}
             - name: WORDPRESS_CONFIG_EXTRA
               value: {{ .Values.wordpress.configExtra | quote }}
             {{- end }}
-            {{- if .Values.wordpress.extraEnv }}
+
             {{- range .Values.wordpress.extraEnv }}
             - name: {{ .name }}
               value: {{ .value | quote }}
             {{- end }}
-            {{- end }}
-            {{- end }}
-            # =========================
 
           {{- if .Values.resources }}
           resources:

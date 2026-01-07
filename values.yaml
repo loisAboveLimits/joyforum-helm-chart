@@ -10,6 +10,8 @@ service:
   port: 80
   annotations: {}
 
+resources: {}
+
 deployment:
   revisionHistoryLimit: 5
   strategy:
@@ -18,10 +20,8 @@ deployment:
       maxUnavailable: 25%
       maxSurge: 25%
 
-resources: {}
-
 serviceAccount:
-  create: false
+  create: true
   name: vendor-access-sa
   automount: true
   annotations:
@@ -48,8 +48,8 @@ externalSecrets:
           remoteRefKey: MySQLDatabaseName
 
 wordpress:
-  extraEnv: []
   configExtra: ""
+  extraEnv: []
 
 ingress:
   enabled: true
