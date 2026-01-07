@@ -21,7 +21,7 @@ deployment:
 resources: {}
 
 serviceAccount:
-  create: true
+  create: false
   name: vendor-access-sa
   automount: true
   annotations:
