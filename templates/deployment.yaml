@@ -3,7 +3,6 @@ kind: Deployment
 metadata:
   name: {{ include "joyforum.fullname" . }}
   labels:
-    app: {{ include "joyforum.name" . }}
     {{- include "joyforum.labels" . | nindent 4 }}
 spec:
   replicas: {{ .Values.replicaCount }}
@@ -17,18 +16,15 @@ spec:
     {{- end }}
   selector:
     matchLabels:
-      app: {{ include "joyforum.name" . }}
+      app.kubernetes.io/name: {{ include "joyforum.name" . }}
+      app.kubernetes.io/instance: {{ .Release.Name }}
   template:
     metadata:
       labels:
-        app: {{ include "joyforum.name" . }}
+        app.kubernetes.io/name: {{ include "joyforum.name" . }}
+        app.kubernetes.io/instance: {{ .Release.Name }}
     spec:
       serviceAccountName: {{ .Values.serviceAccount.name }}
-      tolerations:
-        - key: "workload"
-          operator: "Equal"
-          value: "joyforum"
-          effect: "NoSchedule"
       containers:
         - name: wordpress
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
@@ -56,11 +52,14 @@ spec:
                 secretKeyRef:
                   name: wordpress-db-secret
                   key: WORDPRESS_DB_NAME
-
+            {{- if .Values.wordpress.configExtra }}
             - name: WORDPRESS_CONFIG_EXTRA
-              value: |
-                define('MYSQL_CLIENT_FLAGS', MYSQLI_CLIENT_SSL);
-
+              value: {{ .Values.wordpress.configExtra | quote }}
+            {{- end }}
+            {{- range .Values.wordpress.extraEnv }}
+            - name: {{ .name }}
+              value: {{ .value | quote }}
+            {{- end }}
           {{- if .Values.resources }}
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
