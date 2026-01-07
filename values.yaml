@@ -5,33 +5,10 @@ image:
   tag: latest
   pullPolicy: IfNotPresent
 
-# No imagePullSecrets required; AKS manages ACR auth externally
-imagePullSecrets: []    # with no credentials
-
-# with credentials
-
-# imagePullSecrets:
-#   - acr-pull-secret
-
 service:
-  type: LoadBalancer
+  type: ClusterIP
   port: 80
-  annotations:
-    service.beta.kubernetes.io/azure-load-balancer-internal: "true"  # Required for internal LB on AKS
-
-ingress:
-  enabled: false  # Disabled since using internal LoadBalancer
-
-# ingress:
-#   enabled: false
-#   className: nginx
-#   annotations: {}
-#   hosts:
-#     - host: your-public-domain.com
-#       paths:
-#         - /
-
-env: []
+  annotations: {}
 
 deployment:
   revisionHistoryLimit: 5
@@ -44,22 +21,19 @@ deployment:
 resources: {}
 
 serviceAccount:
-  create: false
-  # name: jormfarm-workload-identity-sa
+  create: true
   name: vendor-access-sa
   automount: true
-  annotations: 
+  annotations:
     azure.workload.identity/client-id: "81c52050-b1c7-478d-9f49-53f8d9bede08"
 
 externalSecrets:
   enabled: true
   secretStore:
     name: wordpress-azure-kv-store
-    azureKeyVaultName: kv-csi-joyforum-xbuns
-    tenantId: ""
-#    tenantId: 606bd698-03f5-4b63-9ba3-1272b3fd2c3c
-    # serviceAccountName: jormfarm-workload-identity-sa
-    serviceAccountName: key-vault-csi-driver-controller
+    azureKeyVaultName: kv-csi-joy-forum-dx8rk
+    tenantId: "606bd698-03f5-4b63-9ba3-1272b3fd2c3c"
+    serviceAccountName: vendor-access-sa
   secrets:
     - name: wordpress-db-secret
       refreshInterval: 10m
@@ -69,6 +43,20 @@ externalSecrets:
         - secretKey: WORDPRESS_DB_PASSWORD
           remoteRefKey: MySQLServerAdminPassword
         - secretKey: WORDPRESS_DB_HOST
-          remoteRefKey: mysql-host # We'll override in env var, but keep for completeness
+          remoteRefKey: MySQLServerHost
         - secretKey: WORDPRESS_DB_NAME
-          remoteRefKey: joyforum_db  # Assuming DB name is static
+          remoteRefKey: MySQLDatabaseName
+
+wordpress:
+  extraEnv: []
+  configExtra: ""
+
+ingress:
+  enabled: true
+  className: azure-application-gateway
+  annotations: {}
+  hosts:
+    - host: joyforum-uat.your-domain.com
+      paths:
+        - path: /
+          pathType: Prefix
