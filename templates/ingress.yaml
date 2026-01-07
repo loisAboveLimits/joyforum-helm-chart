@@ -1,29 +1,27 @@
-# {{- if .Values.ingress.enabled }}
-# apiVersion: networking.k8s.io/v1
-# kind: Ingress
-# metadata:
-#   name: {{ include "joyforum.fullname" . }}
-#   labels:
-#     {{- include "joyforum.labels" . | nindent 4 }}
-#   annotations:
-#     {{- toYaml .Values.ingress.annotations | nindent 4 }}
-# spec:
-#   {{- if .Values.ingress.className }}
-#   ingressClassName: {{ .Values.ingress.className }}
-#   {{- end }}
-#   rules:
-#     {{- range .Values.ingress.hosts }}
-#     - host: {{ .host }}
-#       http:
-#         paths:
-#           {{- range .paths }}
-#           - path: {{ . }}
-#             pathType: Prefix
-#             backend:
-#               service:
-#                 name: {{ include "joyforum.fullname" $ }}
-#                 port:
-#                   number: {{ $.Values.service.port }}
-#           {{- end }}
-#     {{- end }}
-# {{- end }}
+{{- if .Values.ingress.enabled }}
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{ include "joyforum.fullname" . }}
+  {{- with .Values.ingress.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+spec:
+  ingressClassName: {{ .Values.ingress.className }}
+  rules:
+  {{- range .Values.ingress.hosts }}
+    - host: {{ .host }}
+      http:
+        paths:
+        {{- range .paths }}
+          - path: {{ . }}
+            pathType: Prefix
+            backend:
+              service:
+                name: {{ include "joyforum.fullname" $ }}
+                port:
+                  number: {{ $.Values.service.port }}
+        {{- end }}
+  {{- end }}
+{{- end }}

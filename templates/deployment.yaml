@@ -23,19 +23,12 @@ spec:
       labels:
         app: {{ include "joyforum.name" . }}
     spec:
-      # Added serviceAccountName so Pod uses the specific service account (important for ExternalSecrets)
       serviceAccountName: {{ .Values.serviceAccount.name }}
       tolerations:
         - key: "workload"
           operator: "Equal"
           value: "joyforum"
           effect: "NoSchedule"
-      {{- if .Values.imagePullSecrets }}
-      imagePullSecrets:
-        {{- range .Values.imagePullSecrets }}
-        - name: {{ . }}
-        {{- end }}
-      {{- end }}
       containers:
         - name: wordpress
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
@@ -44,7 +37,10 @@ spec:
             - containerPort: 80
           env:
             - name: WORDPRESS_DB_HOST
-              value: mysql-joyforum-h5j6.mysql.database.azure.com
+              valueFrom:
+                secretKeyRef:
+                  name: wordpress-db-secret
+                  key: WORDPRESS_DB_HOST
             - name: WORDPRESS_DB_USER
               valueFrom:
                 secretKeyRef:
@@ -56,11 +52,15 @@ spec:
                   name: wordpress-db-secret
                   key: WORDPRESS_DB_PASSWORD
             - name: WORDPRESS_DB_NAME
-              value: joyforum_db
-            {{- range .Values.env }}
-            - name: {{ .name }}
-              value: {{ .value | quote }}
-            {{- end }}
+              valueFrom:
+                secretKeyRef:
+                  name: wordpress-db-secret
+                  key: WORDPRESS_DB_NAME
+
+            - name: WORDPRESS_CONFIG_EXTRA
+              value: |
+                define('MYSQL_CLIENT_FLAGS', MYSQLI_CLIENT_SSL);
+
           {{- if .Values.resources }}
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
