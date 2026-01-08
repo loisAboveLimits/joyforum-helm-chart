@@ -43,19 +43,24 @@ externalSecrets:
         - secretKey: WORDPRESS_DB_PASSWORD
           remoteRefKey: MySQLAdminPassword
 
+        # UPDATED: now host also comes from KeyVault
+        - secretKey: WORDPRESS_DB_HOST
+          remoteRefKey: MySQLServerHost
+
+        # UPDATED: now db name also comes from KeyVault
+        - secretKey: WORDPRESS_DB_NAME
+          remoteRefKey: MySQLDatabaseName
+
 wordpress:
-  db:
-    host: mysql-joyforum-h5j6.mysql.database.azure.com   # UPDATED: now comes from values, dynamic
-    name: joyforum_db                                   # UPDATED: now comes from values, dynamic
   extraEnv: []
-  configExtra: ""                                       # optional
+  configExtra: ""
 
 ingress:
   enabled: true
   className: azure-application-gateway
   annotations: {}
   hosts:
-    - host: joyforum-uat.your-domain.com                 # UPDATED: host comes from values
+    - host: joyforum-uat.your-domain.com
       paths:
         - path: /
           pathType: Prefix

@@ -32,10 +32,19 @@ spec:
           ports:
             - containerPort: 80
           env:
+            # UPDATED: now host comes from secret (KeyVault via ExternalSecret)
             - name: WORDPRESS_DB_HOST
-              value: {{ .Values.wordpress.db.host | quote }}    # UPDATED: from values, not secret
+              valueFrom:
+                secretKeyRef:
+                  name: wordpress-db-secret
+                  key: WORDPRESS_DB_HOST
+
+            # UPDATED: now db name comes from secret (KeyVault via ExternalSecret)
             - name: WORDPRESS_DB_NAME
-              value: {{ .Values.wordpress.db.name | quote }}    # UPDATED: from values, not secret
+              valueFrom:
+                secretKeyRef:
+                  name: wordpress-db-secret
+                  key: WORDPRESS_DB_NAME
 
             - name: WORDPRESS_DB_USER
               valueFrom:
@@ -58,6 +67,7 @@ spec:
             - name: {{ .name }}
               value: {{ .value | quote }}
             {{- end }}
+
           {{- if .Values.resources }}
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
