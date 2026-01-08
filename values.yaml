@@ -25,7 +25,8 @@ serviceAccount:
   name: vendor-access-sa
   automount: true
   annotations:
-    azure.workload.identity/client-id: "81c52050-b1c7-478d-9f49-53f8d9bede08"
+    # UPDATED: Corrected to the working Client ID
+    azure.workload.identity/client-id: "a2a29a24-5fe5-450a-8791-588ba52dc30f"
 
 externalSecrets:
   enabled: true
@@ -38,16 +39,13 @@ externalSecrets:
     - name: wordpress-db-secret
       refreshInterval: 1m
       data:
+        # UPDATED: remoteRefKeys now match the actual Azure Key Vault names
         - secretKey: WORDPRESS_DB_USER
           remoteRefKey: MySQLAdminUsername
         - secretKey: WORDPRESS_DB_PASSWORD
           remoteRefKey: MySQLAdminPassword
-
-        # UPDATED: now host also comes from KeyVault
         - secretKey: WORDPRESS_DB_HOST
-          remoteRefKey: MySQLServerHost
-
-        # UPDATED: now db name also comes from KeyVault
+          remoteRefKey: MySQLHost
         - secretKey: WORDPRESS_DB_NAME
           remoteRefKey: MySQLDatabaseName
 
