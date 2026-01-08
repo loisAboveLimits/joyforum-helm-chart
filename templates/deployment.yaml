@@ -33,25 +33,21 @@ spec:
             - containerPort: 80
           env:
             - name: WORDPRESS_DB_HOST
-              valueFrom:
-                secretKeyRef:
-                  name: wordpress-db-secret
-                  key: WORDPRESS_DB_HOST
+              value: {{ .Values.wordpress.db.host | quote }}    # UPDATED: from values, not secret
+            - name: WORDPRESS_DB_NAME
+              value: {{ .Values.wordpress.db.name | quote }}    # UPDATED: from values, not secret
+
             - name: WORDPRESS_DB_USER
               valueFrom:
                 secretKeyRef:
                   name: wordpress-db-secret
                   key: WORDPRESS_DB_USER
+
             - name: WORDPRESS_DB_PASSWORD
               valueFrom:
                 secretKeyRef:
                   name: wordpress-db-secret
                   key: WORDPRESS_DB_PASSWORD
-            - name: WORDPRESS_DB_NAME
-              valueFrom:
-                secretKeyRef:
-                  name: wordpress-db-secret
-                  key: WORDPRESS_DB_NAME
 
             {{- if .Values.wordpress.configExtra }}
             - name: WORDPRESS_CONFIG_EXTRA
@@ -62,7 +58,6 @@ spec:
             - name: {{ .name }}
               value: {{ .value | quote }}
             {{- end }}
-
           {{- if .Values.resources }}
           resources:
             {{- toYaml .Values.resources | nindent 12 }}

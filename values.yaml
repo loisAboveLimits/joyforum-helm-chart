@@ -10,8 +10,6 @@ service:
   port: 80
   annotations: {}
 
-resources: {}
-
 deployment:
   revisionHistoryLimit: 5
   strategy:
@@ -20,8 +18,10 @@ deployment:
       maxUnavailable: 25%
       maxSurge: 25%
 
+resources: {}
+
 serviceAccount:
-  create: true
+  create: false
   name: vendor-access-sa
   automount: true
   annotations:
@@ -36,27 +36,26 @@ externalSecrets:
     serviceAccountName: vendor-access-sa
   secrets:
     - name: wordpress-db-secret
-      refreshInterval: 10m
+      refreshInterval: 1m
       data:
         - secretKey: WORDPRESS_DB_USER
-          remoteRefKey: MySQLServerAdminUsername
+          remoteRefKey: MySQLAdminUsername
         - secretKey: WORDPRESS_DB_PASSWORD
-          remoteRefKey: MySQLServerAdminPassword
-        - secretKey: WORDPRESS_DB_HOST
-          remoteRefKey: MySQLServerHost
-        - secretKey: WORDPRESS_DB_NAME
-          remoteRefKey: MySQLDatabaseName
+          remoteRefKey: MySQLAdminPassword
 
 wordpress:
-  configExtra: ""
+  db:
+    host: mysql-joyforum-h5j6.mysql.database.azure.com   # UPDATED: now comes from values, dynamic
+    name: joyforum_db                                   # UPDATED: now comes from values, dynamic
   extraEnv: []
+  configExtra: ""                                       # optional
 
 ingress:
   enabled: true
   className: azure-application-gateway
   annotations: {}
   hosts:
-    - host: joyforum-uat.your-domain.com
+    - host: joyforum-uat.your-domain.com                 # UPDATED: host comes from values
       paths:
         - path: /
           pathType: Prefix

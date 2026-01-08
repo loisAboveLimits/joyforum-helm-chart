@@ -4,13 +4,17 @@ metadata:
   name: {{ include "joyforum.fullname" . }}
   labels:
     {{- include "joyforum.labels" . | nindent 4 }}
+  {{- with .Values.service.annotations }}
   annotations:
-    {{- toYaml .Values.service.annotations | nindent 4 }}
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
 spec:
   type: {{ .Values.service.type }}
   ports:
     - port: {{ .Values.service.port }}
       targetPort: 80
+      protocol: TCP
+      name: http
   selector:
     app.kubernetes.io/name: {{ include "joyforum.name" . }}
     app.kubernetes.io/instance: {{ .Release.Name }}
