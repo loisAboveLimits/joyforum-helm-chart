@@ -51,7 +51,8 @@ externalSecrets:
 
 wordpress:
   extraEnv: []
-  configExtra: ""
+  configExtra: |
+    define('MYSQL_CLIENT_FLAGS', MYSQLI_CLIENT_SSL);
 
 ingress:
   enabled: true
