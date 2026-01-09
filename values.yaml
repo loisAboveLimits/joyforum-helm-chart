@@ -1,7 +1,7 @@
 replicaCount: 2
 
 image:
-  repository: acrselabyoruat.azurecr.io/joyforum-wp
+  repository: acrselabyoruat.azurecr.io/joyforum:latest
   tag: latest
   pullPolicy: IfNotPresent
 
