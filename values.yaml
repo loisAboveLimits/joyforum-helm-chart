@@ -59,7 +59,7 @@ ingress:
   className: azure-application-gateway
   annotations: {}
   hosts:
-    - host: joyforum-uat.your-domain.com
+    - host: uat.joyforum.com
       paths:
         - path: /
           pathType: Prefix
