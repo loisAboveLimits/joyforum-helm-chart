@@ -68,8 +68,8 @@ externalSecrets:
 wordpress:
   configExtra: |
     define('MYSQL_CLIENT_FLAGS', MYSQLI_CLIENT_SSL);
-    define('WP_HOME', 'http://uat.joyforum.com');
-    define('WP_SITEURL', 'http://uat.joyforum.com');
+    define('WP_HOME', 'https://joyforum-uat.singlet.cloud');
+    define('WP_SITEURL', 'https://joyforum-uat.singlet.cloud');
 
 ingress:
   enabled: true
@@ -79,7 +79,7 @@ ingress:
     appgw.cp.apple.com/backend-protocol: "http"
     appgw.cp.apple.com/cookie-based-affinity: "true"
   hosts:
-    - host: uat.joyforum.com
+    - host: joyforum-uat.singlet.cloud
       paths:
         - path: /
           pathType: Prefix
