@@ -77,7 +77,7 @@ wordpress:
     define('WP_SITEURL', 'https://joyforum-uat.singlet.cloud');
 
 ingress:
-  enabled: true
+  enabled: false
   className: azure-application-gateway
   annotations:
 
