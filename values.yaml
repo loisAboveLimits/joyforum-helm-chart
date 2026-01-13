@@ -67,6 +67,10 @@ externalSecrets:
 
 wordpress:
   configExtra: |
+    # Force WordPress to recognize the correct Hostname even if the Gateway pings the IP
+    if (isset($_SERVER['HTTP_X_FORWARDED_HOST'])) {
+        $_SERVER['HTTP_HOST'] = $_SERVER['HTTP_X_FORWARDED_HOST'];
+    }
 
     if (isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] === 'https') {
         $_SERVER['HTTPS'] = 'on';
