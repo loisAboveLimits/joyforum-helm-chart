@@ -5,15 +5,10 @@ metadata:
   labels:
     {{- include "joyforum.labels" . | nindent 4 }}
 spec:
+  # If autoscaling is on, we let HPA control replicas, not this hardcoded number
+  {{- if not .Values.autoscaling.enabled }}
   replicas: {{ .Values.replicaCount }}
-  revisionHistoryLimit: {{ .Values.deployment.revisionHistoryLimit }}
-  strategy:
-    type: {{ .Values.deployment.strategy.type }}
-    {{- if eq .Values.deployment.strategy.type "RollingUpdate" }}
-    rollingUpdate:
-      maxUnavailable: {{ .Values.deployment.strategy.rollingUpdate.maxUnavailable }}
-      maxSurge: {{ .Values.deployment.strategy.rollingUpdate.maxSurge }}
-    {{- end }}
+  {{- end }}
   selector:
     matchLabels:
       app.kubernetes.io/name: {{ include "joyforum.name" . }}
@@ -28,47 +23,43 @@ spec:
       containers:
         - name: wordpress
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
-          imagePullPolicy: {{ .Values.image.pullPolicy }}
           ports:
             - containerPort: 80
           env:
-            # UPDATED: now host comes from secret (KeyVault via ExternalSecret)
             - name: WORDPRESS_DB_HOST
               valueFrom:
                 secretKeyRef:
                   name: wordpress-db-secret
                   key: WORDPRESS_DB_HOST
-
-            # UPDATED: now db name comes from secret (KeyVault via ExternalSecret)
             - name: WORDPRESS_DB_NAME
               valueFrom:
                 secretKeyRef:
                   name: wordpress-db-secret
                   key: WORDPRESS_DB_NAME
-
             - name: WORDPRESS_DB_USER
               valueFrom:
                 secretKeyRef:
                   name: wordpress-db-secret
                   key: WORDPRESS_DB_USER
-
             - name: WORDPRESS_DB_PASSWORD
               valueFrom:
                 secretKeyRef:
                   name: wordpress-db-secret
                   key: WORDPRESS_DB_PASSWORD
-
-            {{- if .Values.wordpress.configExtra }}
             - name: WORDPRESS_CONFIG_EXTRA
               value: {{ .Values.wordpress.configExtra | quote }}
-            {{- end }}
-
-            {{- range .Values.wordpress.extraEnv }}
-            - name: {{ .name }}
-              value: {{ .value | quote }}
-            {{- end }}
-
-          {{- if .Values.resources }}
+          # UPDATED: Added resources for HPA
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
+          # UPDATED: Added volume mount
+          volumeMounts:
+            - name: wp-data
+              mountPath: /var/www/html/wp-content
+      volumes:
+        - name: wp-data
+          {{- if .Values.persistence.enabled }}
+          persistentVolumeClaim:
+            claim_name: {{ include "joyforum.fullname" . }}-pvc
+          {{- else }}
+          emptyDir: {}
           {{- end }}

@@ -1,5 +1,19 @@
 replicaCount: 2
 
+# NEW: Autoscaling configuration
+autoscaling:
+  enabled: true
+  minReplicas: 2
+  maxReplicas: 5
+  targetCPUUtilizationPercentage: 80
+
+# NEW: Shared storage for wp-content
+persistence:
+  enabled: true
+  size: 5Gi
+  storageClass: azurefile-csi
+  accessMode: ReadWriteMany
+
 image:
   repository: acrselabyoruat.azurecr.io/joyforum-wp
   tag: latest
@@ -8,24 +22,26 @@ image:
 service:
   type: ClusterIP
   port: 80
-  annotations: {}
+
+# UPDATED: Resources are REQUIRED for autoscaling to work
+resources:
+  requests:
+    cpu: 100m
+    memory: 256Mi
+  limits:
+    cpu: 500m
+    memory: 512Mi
 
 deployment:
   revisionHistoryLimit: 5
   strategy:
     type: RollingUpdate
-    rollingUpdate:
-      maxUnavailable: 25%
-      maxSurge: 25%
-
-resources: {}
 
 serviceAccount:
   create: false
   name: vendor-access-sa
   automount: true
   annotations:
-    # UPDATED: Corrected to the working Client ID
     azure.workload.identity/client-id: "a2a29a24-5fe5-450a-8791-588ba52dc30f"
 
 externalSecrets:
@@ -37,9 +53,7 @@ externalSecrets:
     serviceAccountName: vendor-access-sa
   secrets:
     - name: wordpress-db-secret
-      refreshInterval: 1m
       data:
-        # UPDATED: remoteRefKeys now match the actual Azure Key Vault names
         - secretKey: WORDPRESS_DB_USER
           remoteRefKey: MySQLAdminUsername
         - secretKey: WORDPRESS_DB_PASSWORD
@@ -50,14 +64,18 @@ externalSecrets:
           remoteRefKey: MySQLDatabaseName
 
 wordpress:
-  extraEnv: []
   configExtra: |
     define('MYSQL_CLIENT_FLAGS', MYSQLI_CLIENT_SSL);
+    define('WP_HOME', 'http://uat.joyforum.com');
+    define('WP_SITEURL', 'http://uat.joyforum.com');
 
 ingress:
   enabled: true
   className: azure-application-gateway
-  annotations: {}
+  annotations:
+    kubernetes.io/ingress.class: azure/application-gateway
+    appgw.cp.apple.com/backend-protocol: "http"
+    appgw.cp.apple.com/cookie-based-affinity: "true"
   hosts:
     - host: uat.joyforum.com
       paths:
