@@ -5,7 +5,6 @@ metadata:
   labels:
     {{- include "joyforum.labels" . | nindent 4 }}
 spec:
-  # If autoscaling is on, we let HPA control replicas, not this hardcoded number
   {{- if not .Values.autoscaling.enabled }}
   replicas: {{ .Values.replicaCount }}
   {{- end }}
@@ -20,6 +19,19 @@ spec:
         app.kubernetes.io/instance: {{ .Release.Name }}
     spec:
       serviceAccountName: {{ .Values.serviceAccount.name }}
+      # Sets group ownership to www-data
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      
+      # NEW: Init Container to ensure Azure File permissions are correct before WP starts
+      initContainers:
+        - name: fix-permissions
+          image: busybox
+          command: ["sh", "-c", "chown -R 33:33 /var/www/html/wp-content/uploads && chmod -R 775 /var/www/html/wp-content/uploads"]
+          volumeMounts:
+            - name: wp-data
+              mountPath: {{ .Values.persistence.mountPath }}
+
       containers:
         - name: wordpress
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
@@ -48,13 +60,11 @@ spec:
                   key: WORDPRESS_DB_PASSWORD
             - name: WORDPRESS_CONFIG_EXTRA
               value: {{ .Values.wordpress.configExtra | quote }}
-          # UPDATED: Added resources for HPA
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
-          # UPDATED: Added volume mount
           volumeMounts:
             - name: wp-data
-              mountPath: {{ .Values.persistence.mountPath | default "/var/www/html/wp-content/uploads" }}
+              mountPath: {{ .Values.persistence.mountPath }}
       volumes:
         - name: wp-data
           {{- if .Values.persistence.enabled }}

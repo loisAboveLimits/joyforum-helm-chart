@@ -1,19 +1,23 @@
 replicaCount: 2
 
-# NEW: Autoscaling configuration
+# Autoscaling configuration
 autoscaling:
   enabled: true
   minReplicas: 2
   maxReplicas: 5
   targetCPUUtilizationPercentage: 80
 
-# NEW: Shared storage for wp-content
+# Shared storage for wp-content/uploads
 persistence:
   enabled: true
   size: 5Gi
   storageClass: azurefile-csi
   accessMode: ReadWriteMany
   mountPath: /var/www/html/wp-content/uploads
+
+# Security Context to help with Azure File permissions
+podSecurityContext:
+  fsGroup: 33  # GID for www-data
 
 image:
   repository: acrselabyoruat.azurecr.io/joyforum-wp
@@ -26,7 +30,6 @@ service:
   annotations:
     service.beta.kubernetes.io/azure-load-balancer-internal: "true"
 
-# UPDATED: Resources are REQUIRED for autoscaling to work
 resources:
   requests:
     cpu: 100m
@@ -53,7 +56,6 @@ externalSecrets:
     name: wordpress-azure-kv-store
     azureKeyVaultName: kv-csi-joy-forum-dx8rk
     tenantId: "606bd698-03f5-4b63-9ba3-1272b3fd2c3c"
-    serviceAccountName: vendor-access-sa
   secrets:
     - name: wordpress-db-secret
       data:
@@ -68,15 +70,12 @@ externalSecrets:
 
 wordpress:
   configExtra: |
-    # Force WordPress to recognize the correct Hostname even if the Gateway pings the IP
     if (isset($_SERVER['HTTP_X_FORWARDED_HOST'])) {
         $_SERVER['HTTP_HOST'] = $_SERVER['HTTP_X_FORWARDED_HOST'];
     }
-
     if (isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] === 'https') {
         $_SERVER['HTTPS'] = 'on';
     }
-
     define('MYSQL_CLIENT_FLAGS', MYSQLI_CLIENT_SSL);
     define('WP_HOME', 'https://joyforum-uat.singlet.cloud');
     define('WP_SITEURL', 'https://joyforum-uat.singlet.cloud');
@@ -84,15 +83,6 @@ wordpress:
 ingress:
   enabled: false
   className: azure-application-gateway
-  annotations:
-
-    kubernetes.io/ingress.class: azure/application-gateway
-    # kubernetes.io/ingress.class: azure/application-gateway
-    appgw.ingress.kubernetes.io/backend-protocol: "http"
-    appgw.ingress.kubernetes.io/cookie-based-affinity: "true"
-
-    appgw.ingress.kubernetes.io/override-backend-host: "true"
-    appgw.ingress.kubernetes.io/health-probe-status-codes: "200-399"
   hosts:
     - host: joyforum-uat.singlet.cloud
       paths:
