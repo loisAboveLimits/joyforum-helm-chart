@@ -59,7 +59,7 @@ spec:
         - name: wp-data
           {{- if .Values.persistence.enabled }}
           persistentVolumeClaim:
-            claim_name: {{ include "joyforum.fullname" . }}-pvc
+            claimName: {{ include "joyforum.fullname" . }}-pvc
           {{- else }}
           emptyDir: {}
           {{- end }}
