@@ -54,7 +54,7 @@ spec:
           # UPDATED: Added volume mount
           volumeMounts:
             - name: wp-data
-              mountPath: /var/www/html/wp-content
+              mountPath: {{ .Values.persistence.mountPath | default "/var/www/html/wp-content/uploads" }}
       volumes:
         - name: wp-data
           {{- if .Values.persistence.enabled }}
