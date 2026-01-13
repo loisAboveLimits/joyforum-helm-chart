@@ -67,6 +67,11 @@ externalSecrets:
 
 wordpress:
   configExtra: |
+
+    if (isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] === 'https') {
+        $_SERVER['HTTPS'] = 'on';
+    }
+
     define('MYSQL_CLIENT_FLAGS', MYSQLI_CLIENT_SSL);
     define('WP_HOME', 'https://joyforum-uat.singlet.cloud');
     define('WP_SITEURL', 'https://joyforum-uat.singlet.cloud');
@@ -75,9 +80,14 @@ ingress:
   enabled: true
   className: azure-application-gateway
   annotations:
+
+    kubernetes.io/ingress.class: azure/application-gateway
     # kubernetes.io/ingress.class: azure/application-gateway
-    appgw.cp.apple.com/backend-protocol: "http"
-    appgw.cp.apple.com/cookie-based-affinity: "true"
+    appgw.ingress.kubernetes.io/backend-protocol: "http"
+    appgw.ingress.kubernetes.io/cookie-based-affinity: "true"
+
+    appgw.ingress.kubernetes.io/override-backend-host: "true"
+    
   hosts:
     - host: joyforum-uat.singlet.cloud
       paths:
