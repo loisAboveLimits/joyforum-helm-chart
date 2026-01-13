@@ -20,7 +20,7 @@ image:
   pullPolicy: IfNotPresent
 
 service:
-  type: ClusterIP
+  type: LoadBalancer
   port: 80
 
 # UPDATED: Resources are REQUIRED for autoscaling to work
