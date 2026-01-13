@@ -22,6 +22,8 @@ image:
 service:
   type: LoadBalancer
   port: 80
+  annotations:
+    service.beta.kubernetes.io/azure-load-balancer-internal: "true"
 
 # UPDATED: Resources are REQUIRED for autoscaling to work
 resources:
