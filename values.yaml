@@ -87,7 +87,7 @@ ingress:
     appgw.ingress.kubernetes.io/cookie-based-affinity: "true"
 
     appgw.ingress.kubernetes.io/override-backend-host: "true"
-    
+    appgw.ingress.kubernetes.io/health-probe-status-codes: "200-399"
   hosts:
     - host: joyforum-uat.singlet.cloud
       paths:
