@@ -7,7 +7,7 @@ autoscaling:
   maxReplicas: 5
   targetCPUUtilizationPercentage: 80
 
-# Shared storage for wp-content/uploads
+# Shared storage for wp-content
 persistence:
   enabled: true
   size: 5Gi
@@ -56,6 +56,8 @@ externalSecrets:
     name: wordpress-azure-kv-store
     azureKeyVaultName: kv-csi-joy-forum-dx8rk
     tenantId: "606bd698-03f5-4b63-9ba3-1272b3fd2c3c"
+    # RESTORED: This line is required by your template to avoid the "null" error
+    serviceAccountName: vendor-access-sa
   secrets:
     - name: wordpress-db-secret
       data:
