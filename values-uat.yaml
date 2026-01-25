@@ -82,6 +82,12 @@ wordpress:
     define('WP_HOME', 'https://joyforum-uat.singlet.cloud');
     define('WP_SITEURL', 'https://joyforum-uat.singlet.cloud');
 
+service:
+  type: LoadBalancer
+  port: 80
+  annotations:
+    service.beta.kubernetes.io/azure-load-balancer-internal: "true"
+
 ingress:
   enabled: false
   className: azure-application-gateway
