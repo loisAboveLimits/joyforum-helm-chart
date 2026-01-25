@@ -49,7 +49,6 @@ serviceAccount:
   automount: true
   annotations:
     azure.workload.identity/client-id: "a2a29a24-5fe5-450a-8791-588ba52dc30f"
-`
 externalSecrets:
   enabled: true
   secretStore:
