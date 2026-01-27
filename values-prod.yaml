@@ -20,7 +20,7 @@ podSecurityContext:
   fsGroup: 33  # GID for www-data
 
 image:
-  repository: acrselabyoruat.azurecr.io/joyforum-wp
+  repository: acrselabyor.azurecr.io/joyforum-wp-prod:eb4f7b6
   tag: latest
   pullPolicy: IfNotPresent
 
