@@ -49,8 +49,8 @@ jobs:
 
       - name: Login to ACR as Helm registry
         env:
-          ACR_USERNAME: ${{ secrets.ACR_USERNAME }}
-          ACR_PASSWORD: ${{ secrets.ACR_PASSWORD }}
+          ACR_USERNAME: ${{ secrets.PROD_ACR_USERNAME }}
+          ACR_PASSWORD: ${{ secrets.PROD_ACR_PASSWORD }}
         run: |
           echo "$ACR_PASSWORD" | helm registry login "$ACR_LOGIN_SERVER" \
             --username "$ACR_USERNAME" \
