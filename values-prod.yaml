@@ -78,8 +78,8 @@ wordpress:
         $_SERVER['HTTPS'] = 'on';
     }
     define('MYSQL_CLIENT_FLAGS', MYSQLI_CLIENT_SSL);
-    define('WP_HOME', 'https://joyforum-uat.singlet.cloud');
-    define('WP_SITEURL', 'https://joyforum-uat.singlet.cloud');
+    define('WP_HOME', 'https://joyforum.com');
+    define('WP_SITEURL', 'https://joyforum.com');
 
 
 service:
