@@ -21,7 +21,7 @@ podSecurityContext:
 
 image:
   repository: acrselabyor.azurecr.io/joyforum-wp-prod
-  tag: eb4f7b6
+  tag: eb4f7b64730f659631b652cf3922fc67ba8c32b2
   pullPolicy: IfNotPresent
 
 service:
