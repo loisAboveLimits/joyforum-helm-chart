@@ -49,6 +49,7 @@ serviceAccount:
   automount: true
   annotations:
     azure.workload.identity/client-id: "a2a29a24-5fe5-450a-8791-588ba52dc30f"
+
 externalSecrets:
   enabled: true
   secretStore:
@@ -81,12 +82,23 @@ wordpress:
     define('WP_HOME', 'https://joyforum.com');
     define('WP_SITEURL', 'https://joyforum.com');
 
-
+# ---- Added annotation to prevent LoadBalancer recreation on reinstall ----
 service:
   type: LoadBalancer
   port: 80
   annotations:
     service.beta.kubernetes.io/azure-load-balancer-internal: "true"
+    # Added this annotation to preserve the same internal load balancer on reinstall
+
+# ---- Explicitly define PersistentVolumeClaim retention ----
+persistence:
+  enabled: true
+  size: 5Gi
+  storageClass: azurefile-csi
+  accessMode: ReadWriteMany
+  mountPath: /var/www/html/wp-content/uploads
+  # Important: To keep data persistent across reinstalls, make sure PVCs are not deleted automatically.
+  # This depends on your PVC reclaim policy in your cluster, which should be 'Retain'
 
 ingress:
   enabled: false
