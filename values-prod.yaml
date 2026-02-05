@@ -80,7 +80,7 @@ wordpress:
     }
     define('MYSQL_CLIENT_FLAGS', MYSQLI_CLIENT_SSL);
     define('WP_HOME', 'https://joyforum-prd.singlet.cloud');
-    define('WP_SITEURL', 'https://https://joyforum-prd.singlet.cloud');
+    define('WP_SITEURL', 'https://joyforum-prd.singlet.cloud');
 
 # ---- Added annotation to prevent LoadBalancer recreation on reinstall ----
 service:
