@@ -9,7 +9,7 @@ autoscaling:
 
 # Shared storage for wp-content
 persistence:
-  enabled: true
+  enabled: false
   size: 5Gi
   storageClass: azurefile-csi
   accessMode: ReadWriteMany
@@ -92,7 +92,7 @@ service:
 
 # ---- Explicitly define PersistentVolumeClaim retention ----
 persistence:
-  enabled: true
+  enabled: false
   size: 5Gi
   storageClass: azurefile-csi
   accessMode: ReadWriteMany
