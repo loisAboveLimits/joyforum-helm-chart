@@ -28,9 +28,9 @@ spec:
         - name: fix-permissions
           image: busybox
           command: ["sh", "-c", "chown -R 33:33 /var/www/html/wp-content/uploads && chmod -R 775 /var/www/html/wp-content/uploads"]
-          volumeMounts:
-            - name: wp-data
-              mountPath: {{ .Values.persistence.mountPath }}
+          # volumeMounts:
+          #   - name: wp-data
+          #     mountPath: {{ .Values.persistence.mountPath }}
 
       containers:
         - name: wordpress
@@ -62,14 +62,14 @@ spec:
               value: {{ .Values.wordpress.configExtra | quote }}
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
-          volumeMounts:
-            - name: wp-data
-              mountPath: {{ .Values.persistence.mountPath }}
-      volumes:
-        - name: wp-data
-          {{- if .Values.persistence.enabled }}
-          persistentVolumeClaim:
-            claimName: {{ include "joyforum.fullname" . }}-pvc
-          {{- else }}
-          emptyDir: {}
-          {{- end }}
+          # volumeMounts:
+          #   - name: wp-data
+          #     mountPath: {{ .Values.persistence.mountPath }}
+      # volumes:
+      #   - name: wp-data
+      #     {{- if .Values.persistence.enabled }}
+      #     persistentVolumeClaim:
+      #       claimName: {{ include "joyforum.fullname" . }}-pvc
+      #     {{- else }}
+      #     emptyDir: {}
+      #     {{- end }}
